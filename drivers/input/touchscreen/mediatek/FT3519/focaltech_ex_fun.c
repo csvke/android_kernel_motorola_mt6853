@@ -569,6 +569,7 @@ void fts_release_apk_debug_channel(struct fts_ts_data *ts_data)
 #endif
     }
 }
+EXPORT_SYMBOL(fts_release_apk_debug_channel);
 
 /************************************************************************
  * sysfs interface
@@ -1231,6 +1232,7 @@ int fts_remove_sysfs(struct fts_ts_data *ts_data)
     sysfs_remove_group(&ts_data->dev->kobj, &fts_attribute_group);
     return 0;
 }
+EXPORT_SYMBOL(fts_remove_sysfs);
 
 MODULE_AUTHOR("FocalTech Driver Team");
 MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");

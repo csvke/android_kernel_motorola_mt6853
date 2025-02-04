@@ -2112,6 +2112,7 @@ int fts_fwupg_exit(struct fts_ts_data *ts_data)
     FTS_FUNC_EXIT();
     return 0;
 }
+EXPORT_SYMBOL(fts_fwupg_exit);
 
 MODULE_AUTHOR("FocalTech Driver Team");
 MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");

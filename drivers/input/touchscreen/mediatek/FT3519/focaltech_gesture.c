@@ -345,6 +345,7 @@ void fts_gesture_recovery(struct fts_ts_data *ts_data)
         fts_write_reg(FTS_REG_GESTURE_EN, ENABLE);
     }
 }
+EXPORT_SYMBOL(fts_gesture_recovery);
 
 int fts_gesture_suspend(struct fts_ts_data *ts_data)
 {
@@ -458,6 +459,7 @@ int fts_gesture_exit(struct fts_ts_data *ts_data)
     FTS_FUNC_EXIT();
     return 0;
 }
+EXPORT_SYMBOL(fts_gesture_exit);
 
 MODULE_AUTHOR("FocalTech Driver Team");
 MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");

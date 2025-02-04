@@ -148,6 +148,7 @@ int fts_read_reg(u8 addr, u8 *value)
 {
     return fts_read(&addr, 1, value, 1);
 }
+EXPORT_SYMBOL(fts_read_reg);
 
 int fts_write_reg(u8 addr, u8 value)
 {
@@ -191,6 +192,7 @@ int fts_bus_exit(struct fts_ts_data *ts_data)
     FTS_FUNC_EXIT();
     return 0;
 }
+EXPORT_SYMBOL(fts_bus_exit);
 
 MODULE_AUTHOR("FocalTech Driver Team");
 MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
