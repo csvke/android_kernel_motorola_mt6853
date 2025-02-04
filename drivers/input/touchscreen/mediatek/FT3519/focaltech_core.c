@@ -1498,6 +1498,7 @@ static void fts_resume_work(struct work_struct *work)
 }
 
 #if defined(CONFIG_FB)
+// csvke: add ifdef for different kernel versions as FB_EARLY_EVENT_BLANK has been removed or renamed in newer kernel versions
 static int fb_notifier_callback(struct notifier_block *self,
                                 unsigned long event, void *data)
 {
@@ -1511,7 +1512,11 @@ static int fb_notifier_callback(struct notifier_block *self,
         return 0;
     }
 
+#if defined(FB_EARLY_EVENT_BLANK)
     if (!(event == FB_EARLY_EVENT_BLANK || event == FB_EVENT_BLANK)) {
+#else
+    if (!(event == FB_EVENT_BLANK)) {
+#endif
         FTS_INFO("event(%lu) do not need process\n", event);
         return 0;
     }
@@ -1520,17 +1525,25 @@ static int fb_notifier_callback(struct notifier_block *self,
     FTS_INFO("FB event:%lu,blank:%d", event, *blank);
     switch (*blank) {
     case FB_BLANK_UNBLANK:
+#if defined(FB_EARLY_EVENT_BLANK)
         if (FB_EARLY_EVENT_BLANK == event) {
             FTS_INFO("resume: event = %lu, not care\n", event);
         } else if (FB_EVENT_BLANK == event) {
-            queue_work(fts_data->ts_workqueue, &fts_data->resume_work);
+#else
+        if (FB_EVENT_BLANK == event) {
+#endif
+            queue_work(ts_data->ts_workqueue, &ts_data->resume_work);
         }
         break;
     case FB_BLANK_POWERDOWN:
+#if defined(FB_EARLY_EVENT_BLANK)
         if (FB_EARLY_EVENT_BLANK == event) {
-            cancel_work_sync(&fts_data->resume_work);
+            cancel_work_sync(&ts_data->resume_work);
             fts_ts_suspend(ts_data->dev);
         } else if (FB_EVENT_BLANK == event) {
+#else
+        if (FB_EVENT_BLANK == event) {
+#endif
             FTS_INFO("suspend: event = %lu, not care\n", event);
         }
         break;
