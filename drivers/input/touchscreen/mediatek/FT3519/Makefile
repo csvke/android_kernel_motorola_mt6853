@@ -19,3 +19,5 @@ all:
 
 clean:
 	$(MAKE) -C $(KERNEL_SRC) M=$(PWD) clean
+	# Ensure these files are not deleted
+	touch include/firmware/fw_sample.i include/pramboot/FT5452i_Pramboot_v4.1_20210427.i
