@@ -1,5 +1,7 @@
 # Makefile for the focaltech touchscreen drivers.
 
+# obj-m   +=  focaltech_ft3519.o
+
 obj-m   +=  focaltech_core.o
 obj-m   +=  focaltech_esdcheck.o
 obj-m   +=  focaltech_ex_fun.o
