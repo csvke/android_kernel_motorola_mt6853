@@ -5,6 +5,7 @@
 *.ko
 *.mod.c
 *.mod.o
+*.mod
 
 # Ignore temporary files
 *.tmp
