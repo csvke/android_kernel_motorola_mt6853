@@ -1115,14 +1115,20 @@ read_flash_err:
     }
     return ret;
 }
-
+/*
+cskve: mmsegment_t is not defined in kernel 5.10+, so changes are made (need to change original code, 
+if needed please go back to where it's forked from 
+https://github.com/csvke/android_kernel_motorola_mt6853/blob/f54d20fe7cc04df8109a224d2b211185462182ad/drivers/input/touchscreen/mediatek/FT3519/focaltech_flash.c#L1119
+*/
 static int fts_read_file(char *file_name, u8 **file_buf)
 {
     int ret = 0;
     char file_path[FILE_NAME_LENGTH] = { 0 };
     struct file *filp = NULL;
     struct inode *inode;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0))
     mm_segment_t old_fs;
+#endif
     loff_t pos;
     loff_t file_len = 0;
 
@@ -1138,31 +1144,42 @@ static int fts_read_file(char *file_name, u8 **file_buf)
         return -ENOENT;
     }
 
-#if 1
     inode = filp->f_inode;
-#else
-    /* reserved for linux earlier verion */
-    inode = filp->f_dentry->d_inode;
-#endif
+    file_len = i_size_read(inode);
+    if (file_len <= 0) {
+        FTS_ERROR("file length is invalid");
+        filp_close(filp, NULL);
+        return -EINVAL;
+    }
 
-    file_len = inode->i_size;
-    *file_buf = (u8 *)vmalloc(file_len);
-    if (NULL == *file_buf) {
-        FTS_ERROR("file buf malloc fail");
+    *file_buf = kzalloc(file_len, GFP_KERNEL);
+    if (!*file_buf) {
+        FTS_ERROR("allocate memory for file buffer fail");
         filp_close(filp, NULL);
         return -ENOMEM;
     }
+
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0))
     old_fs = get_fs();
     set_fs(KERNEL_DS);
     pos = 0;
-    ret = vfs_read(filp, *file_buf, file_len , &pos);
-    if (ret < 0)
-        FTS_ERROR("read file fail");
-    FTS_INFO("file len:%d read len:%d pos:%d", (u32)file_len, ret, (u32)pos);
-    filp_close(filp, NULL);
+    ret = vfs_read(filp, *file_buf, file_len, &pos);
     set_fs(old_fs);
+#else
+    pos = 0;
+    ret = kernel_read(filp, *file_buf, file_len, &pos);
+#endif
 
-    return ret;
+    filp_close(filp, NULL);
+
+    if (ret < 0) {
+        FTS_ERROR("read file fail");
+        kfree(*file_buf);
+        *file_buf = NULL;
+        return ret;
+    }
+
+    return file_len;
 }
 
 int fts_upgrade_bin(char *fw_name, bool force)
