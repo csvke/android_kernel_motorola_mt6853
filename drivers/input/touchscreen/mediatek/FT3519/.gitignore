@@ -1,0 +1,39 @@
+# Ignore object files
+*.o
+
+# Ignore module files
+*.ko
+*.mod.c
+*.mod.o
+
+# Ignore temporary files
+*.tmp
+
+# Ignore dependency files
+*.d
+
+# Ignore symbol version files
+*.symvers
+
+# Ignore order files
+*.order
+
+# Ignore marker files
+*.markers
+
+# Ignore coverage files
+*.gcno
+*.gcda
+*.gcov
+
+# Ignore list files
+*.lst
+
+# Ignore other generated files
+*.cmd
+*.su
+*.dwo
+*.T
+
+# Ignore build directories
+/build/
