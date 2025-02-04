@@ -1231,3 +1231,8 @@ int fts_remove_sysfs(struct fts_ts_data *ts_data)
     sysfs_remove_group(&ts_data->dev->kobj, &fts_attribute_group);
     return 0;
 }
+
+MODULE_AUTHOR("FocalTech Driver Team");
+MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
+MODULE_LICENSE("GPL v2");

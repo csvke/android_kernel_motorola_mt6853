@@ -2193,5 +2193,6 @@ module_init(fts_ts_init);
 module_exit(fts_ts_exit);
 
 MODULE_AUTHOR("FocalTech Driver Team");
+MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
 MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
 MODULE_LICENSE("GPL v2");

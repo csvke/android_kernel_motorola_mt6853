@@ -305,3 +305,8 @@ int fts_ex_mode_exit(struct fts_ts_data *ts_data)
     sysfs_remove_group(&ts_data->dev->kobj, &fts_touch_mode_group);
     return 0;
 }
+
+MODULE_AUTHOR("FocalTech Driver Team");
+MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
+MODULE_LICENSE("GPL v2");
