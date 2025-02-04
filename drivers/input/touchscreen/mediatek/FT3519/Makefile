@@ -1,6 +1,6 @@
 # Makefile for the focaltech touchscreen drivers.
 
-KERNEL_SRC ?= /lib/modules/$(shell uname -r)/build
+KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 
 obj-m += focaltech_core.o
@@ -15,9 +15,9 @@ obj-m += focaltech_flash/
 obj-m += focaltech_i2c.o
 
 all:
-	$(MAKE) -C $(KERNEL_SRC) M=$(PWD) modules
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
 
 clean:
-	$(MAKE) -C $(KERNEL_SRC) M=$(PWD) clean
+	$(MAKE) -C $(KDIR) M=$(PWD) clean
 	# Ensure these files are not deleted
 	touch include/firmware/fw_sample.i include/pramboot/FT5452i_Pramboot_v4.1_20210427.i
