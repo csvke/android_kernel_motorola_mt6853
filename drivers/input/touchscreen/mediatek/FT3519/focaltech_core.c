@@ -1972,6 +1972,7 @@ static int fts_ts_remove_entry(struct fts_ts_data *ts_data)
     return 0;
 }
 
+// csvke: WIP: warning: 'fts_ts_suspend' defined but not used [-Wunused-function], wonder why the original code has this function defined but not used
 static int fts_ts_suspend(struct device *dev)
 {
     int ret = 0;
@@ -2086,7 +2087,12 @@ static const struct dev_pm_ops fts_dev_pm_ops = {
 * TP Driver
 *****************************************************************************/
 
+// csvke: add ifdef for different kernel versions as i2c_device_id has been removed in newer kernel versions and probe function has changed
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
+static int fts_ts_probe(struct i2c_client *client)
+#else
 static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *id)
+#endif
 {
     int ret = 0;
     struct fts_ts_data *ts_data = NULL;
@@ -2123,9 +2129,17 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
     return 0;
 }
 
+// csvke: add ifdef for different kernel versions as *remove in i2c.h is to return void has been removed in newer kernel versions
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
+static void fts_ts_remove(struct i2c_client *client)
+#else
 static int fts_ts_remove(struct i2c_client *client)
+#endif
 {
-    return fts_ts_remove_entry(i2c_get_clientdata(client));
+    fts_ts_remove_entry(i2c_get_clientdata(client));
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0))
+    return 0;
+#endif
 }
 
 static const struct i2c_device_id fts_ts_id[] = {
@@ -2138,9 +2152,15 @@ static const struct of_device_id fts_dt_match[] = {
 };
 MODULE_DEVICE_TABLE(of, fts_dt_match);
 
+// csvke: add ifdef for different kernel versions as i2c_driver has changed in newer kernel versions
 static struct i2c_driver fts_ts_driver = {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
     .probe = fts_ts_probe,
     .remove = fts_ts_remove,
+#else
+    .probe = fts_ts_probe,
+    .remove = fts_ts_remove,
+#endif
     .driver = {
         .name = FTS_DRIVER_NAME,
         .owner = THIS_MODULE,
