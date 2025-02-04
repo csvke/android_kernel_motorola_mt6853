@@ -11,6 +11,7 @@ obj-m   +=  focaltech_point_report_check.o
 
 obj-m   +=  focaltech_test/focaltech_test.o
 obj-m   +=  focaltech_test/focaltech_test_ini.o
+obj-m   +=  focaltech_test/supported_ic/focaltech_test_ft5452i.o
 
 obj-m   +=  focaltech_flash/focaltech_upgrade_ft5452i.o
 

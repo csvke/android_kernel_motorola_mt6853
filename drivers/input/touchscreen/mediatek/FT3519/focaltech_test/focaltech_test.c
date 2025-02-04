@@ -43,7 +43,8 @@
 /*****************************************************************************
 * Global variable or extern global variabls/functions
 *****************************************************************************/
-struct fts_test *fts_ftest;
+struct fts_test *fts_ftest = NULL;
+EXPORT_SYMBOL(fts_ftest);
 
 struct test_funcs *test_func_list[] = {
     &test_func_ft5452i,
@@ -60,6 +61,7 @@ void sys_delay(int ms)
 {
     msleep(ms);
 }
+EXPORT_SYMBOL(sys_delay);
 
 int fts_abs(int value)
 {
@@ -68,16 +70,19 @@ int fts_abs(int value)
 
     return value;
 }
+EXPORT_SYMBOL(fts_abs);
 
 void *fts_malloc(size_t size)
 {
     return kzalloc(size, GFP_KERNEL);
 }
+EXPORT_SYMBOL(fts_malloc);
 
 void fts_free_proc(void *p)
 {
     return kfree(p);
 }
+EXPORT_SYMBOL(fts_free_proc);
 
 void print_buffer(int *buffer, int length, int line_num)
 {
@@ -117,6 +122,7 @@ void print_buffer(int *buffer, int length, int line_num)
         tmpbuf = NULL;
     }
 }
+EXPORT_SYMBOL(print_buffer);
 
 /********************************************************************
  * test read/write interface
@@ -148,6 +154,7 @@ int fts_test_read_reg(u8 addr, u8 *val)
 {
     return fts_test_bus_read(&addr, 1, val, 1);
 }
+EXPORT_SYMBOL(fts_test_read_reg);
 
 int fts_test_write_reg(u8 addr, u8 val)
 {
@@ -160,6 +167,7 @@ int fts_test_write_reg(u8 addr, u8 val)
 
     return ret;
 }
+EXPORT_SYMBOL(fts_test_write_reg);
 
 int fts_test_read(u8 addr, u8 *readbuf, int readlen)
 {
@@ -258,6 +266,7 @@ int fts_test_write(u8 addr, u8 *writebuf, int writelen)
     fts_free(data);
     return 0;
 }
+EXPORT_SYMBOL(fts_test_write);
 
 /********************************************************************
  * test global function enter work/factory mode
@@ -337,6 +346,7 @@ int enter_factory_mode(void)
 
     return 0;
 }
+EXPORT_SYMBOL(enter_factory_mode);
 
 /*
  * read_mass_data - read rawdata/short test data
@@ -530,6 +540,7 @@ int start_scan(void)
 
     return 0;
 }
+EXPORT_SYMBOL(start_scan);
 
 static int read_rawdata(
     struct fts_test *tdata,
@@ -612,6 +623,7 @@ int get_rawdata(int *data)
 
     return 0;
 }
+EXPORT_SYMBOL(get_rawdata);
 
 /*
  * chip_clb - auto clb
@@ -870,6 +882,7 @@ bool compare_array(int *data, int *min, int *max, bool key)
 
     return result;
 }
+EXPORT_SYMBOL(compare_array);
 
 /*
  * show_data - show and save test data to testresult.txt
@@ -903,6 +916,7 @@ void show_data(int *data, bool key)
     FTS_TEST_FUNC_EXIT();
 #endif
 }
+EXPORT_SYMBOL(show_data);
 
 /* mc_sc only */
 /* Only V3 Pattern has mapping & no-mapping */
@@ -931,6 +945,7 @@ int mapping_switch(u8 mapping)
 
     return 0;
 }
+EXPORT_SYMBOL(mapping_switch);
 
 bool get_fw_wp(u8 wp_ch_sel, enum wp_type water_proof_type)
 {
@@ -970,6 +985,7 @@ bool get_fw_wp(u8 wp_ch_sel, enum wp_type water_proof_type)
 
     return fw_wp_state;
 }
+EXPORT_SYMBOL(get_fw_wp);
 
 int get_cb_mc_sc(u8 wp, int byte_num, int *cb_buf, enum byte_mode mode)
 {
@@ -991,6 +1007,7 @@ int get_cb_mc_sc(u8 wp, int byte_num, int *cb_buf, enum byte_mode mode)
 
     return 0;
 }
+EXPORT_SYMBOL(get_cb_mc_sc);
 
 int get_rawdata_mc_sc(enum wp_type wp, int *data)
 {
@@ -1028,6 +1045,7 @@ int get_rawdata_mc_sc(enum wp_type wp, int *data)
 
     return 0;
 }
+EXPORT_SYMBOL(get_rawdata_mc_sc);
 
 int get_rawdata_mc(u8 fre, u8 fir, int *rawdata)
 {
@@ -1120,6 +1138,7 @@ test_err:
     FTS_TEST_FUNC_EXIT();
     return ret;
 }
+EXPORT_SYMBOL(short_get_adc_data_mc);
 
 bool compare_mc_sc(bool tx_check, bool rx_check, int *data, int *min, int *max)
 {
@@ -1156,6 +1175,7 @@ bool compare_mc_sc(bool tx_check, bool rx_check, int *data, int *min, int *max)
 
     return result;
 }
+EXPORT_SYMBOL(compare_mc_sc);
 
 void show_data_mc_sc(int *data)
 {
@@ -1174,6 +1194,8 @@ void show_data_mc_sc(int *data)
     }
     FTS_TEST_SAVE_INFO("\n");
 }
+EXPORT_SYMBOL(show_data_mc_sc);
+
 /* mc_sc end*/
 
 #if CSV_SUPPORT || TXT_SUPPORT
@@ -1533,6 +1555,7 @@ void fts_test_save_data(char *name, int code, int *data, int datacnt,
 
     td->item_count++;
 }
+EXPORT_SYMBOL(fts_test_save_data);
 
 static void fts_test_free_data(struct fts_test *tdata)
 {

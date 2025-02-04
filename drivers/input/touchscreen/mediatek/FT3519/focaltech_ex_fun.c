@@ -35,6 +35,8 @@
 #include "focaltech_core.h"
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
+#include <linux/irq.h>
+#include <linux/irqdesc.h>
 
 /*****************************************************************************
 * Private constant and macro definitions using #define
@@ -610,9 +612,16 @@ static ssize_t fts_irq_show(
     struct device *dev, struct device_attribute *attr, char *buf)
 {
     ssize_t count = 0;
-    struct irq_desc *desc = irq_to_desc(fts_data->irq);
+    struct fts_ts_data *ts_data = dev_get_drvdata(dev);
+    int irq = ts_data->irq; // Assuming ts_data has an irq field
+    struct irq_data *irq_data = irq_get_irq_data(irq);
+    struct irq_desc *desc = irq_data ? irq_data_to_desc(irq_data) : NULL;
 
-    count = snprintf(buf, PAGE_SIZE, "irq_depth:%d\n", desc->depth);
+    if (desc) {
+        count = snprintf(buf, PAGE_SIZE, "irq_depth:%d\n", desc->depth);
+    } else {
+        count = snprintf(buf, PAGE_SIZE, "irq_desc not found\n");
+    }
 
     return count;
 }

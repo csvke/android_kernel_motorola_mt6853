@@ -1486,3 +1486,9 @@ struct test_funcs test_func_ft5452i = {
     .key_num_total = 0,
     .start_test = start_test_ft5452i,
 };
+EXPORT_SYMBOL(test_func_ft5452i);
+
+MODULE_AUTHOR("Author: Focaltech Driver Team");
+MODULE_AUTHOR("Frankie Yuen <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech FT3519 I2C Touchscreen Driver");
+MODULE_LICENSE("GPL v2");

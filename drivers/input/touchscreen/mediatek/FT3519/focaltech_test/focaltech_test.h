@@ -556,7 +556,7 @@ extern struct fts_test *fts_ftest;
 
 void sys_delay(int ms);
 int fts_abs(int value);
-void print_buffer(int *buffer, int length, int line_num);
+extern void print_buffer(int *buffer, int length, int line_num);
 int fts_test_read_reg(u8 addr, u8 *val);
 int fts_test_write_reg(u8 addr, u8 val);
 int fts_test_read(u8 addr, u8 *readbuf, int readlen);

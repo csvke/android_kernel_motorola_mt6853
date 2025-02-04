@@ -70,6 +70,7 @@
 * Global variable or extern global variabls/functions
 *****************************************************************************/
 struct fts_ts_data *fts_data = NULL;
+EXPORT_SYMBOL(fts_data);
 
 /*****************************************************************************
 * Static function prototypes
@@ -126,6 +127,7 @@ int fts_wait_tp_to_valid(void)
 
     return -EIO;
 }
+EXPORT_SYMBOL(fts_wait_tp_to_valid);
 
 /*****************************************************************************
 *  Name: fts_tp_state_recovery
@@ -160,6 +162,7 @@ int fts_reset_proc(int hdelayms)
 
     return 0;
 }
+EXPORT_SYMBOL(fts_reset_proc);
 
 void fts_irq_disable(void)
 {
@@ -176,6 +179,7 @@ void fts_irq_disable(void)
     spin_unlock_irqrestore(&fts_data->irq_lock, irqflags);
     FTS_FUNC_EXIT();
 }
+EXPORT_SYMBOL(fts_irq_disable);
 
 void fts_irq_enable(void)
 {
@@ -192,6 +196,7 @@ void fts_irq_enable(void)
     spin_unlock_irqrestore(&fts_data->irq_lock, irqflags);
     FTS_FUNC_EXIT();
 }
+EXPORT_SYMBOL(fts_irq_enable);
 
 void fts_hid2std(void)
 {
@@ -217,6 +222,7 @@ void fts_hid2std(void)
         }
     }
 }
+EXPORT_SYMBOL(fts_hid2std);
 
 static int fts_match_cid(struct fts_ts_data *ts_data,
                          u16 type, u8 id_h, u8 id_l, bool force)

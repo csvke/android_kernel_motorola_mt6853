@@ -1419,6 +1419,7 @@ get_ini_err:
 
     return ret;
 }
+EXPORT_SYMBOL(fts_test_get_testparam_from_ini);
 
 MODULE_AUTHOR("Author: Focaltech Driver Team");
 MODULE_AUTHOR("Frankie Yuen <frankie.yuen@me.com>");

@@ -1,5 +1,5 @@
 /************************************************************************
-* Copyright (c) 2012-2020, Focaltech Systems (R)£¬All Rights Reserved.
+* Copyright (c) 2012-2020, Focaltech Systems (R)ï¿½ï¿½All Rights Reserved.
 *
 * File Name: focaltech_flash.h
 *
@@ -207,11 +207,11 @@ extern struct upgrade_func upgrade_func_ft5452i;
 /*****************************************************************************
 * Static function prototypes
 *****************************************************************************/
-int fts_fwupg_reset_in_boot(void);
-int fts_fwupg_enter_into_boot(void);
-int fts_fwupg_erase(u32 delay);
+extern int fts_fwupg_reset_in_boot(void);
+extern int fts_fwupg_enter_into_boot(void);
+extern int fts_fwupg_erase(u32 delay);
 int fts_fwupg_ecc_cal(u32 saddr, u32 len);
-int fts_flash_write_buf(u32 saddr, u8 *buf, u32 len, u32 delay);
+extern int fts_flash_write_buf(u32 saddr, u8 *buf, u32 len, u32 delay);
 int fts_flash_read_buf(u32 saddr, u8 *buf, u32 len);
 int fts_fwupg_upgrade(struct fts_upgrade *upg);
 #endif

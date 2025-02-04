@@ -192,6 +192,7 @@ struct upgrade_func upgrade_func_ft5452i = {
     .hid_supported = false,
     .upgrade = fts_ft5452i_upgrade,
 };
+EXPORT_SYMBOL(upgrade_func_ft5452i);
 
 MODULE_AUTHOR("Author: Focaltech Driver Team");
 MODULE_AUTHOR("Frankie Yuen <frankie.yuen@me.com>");

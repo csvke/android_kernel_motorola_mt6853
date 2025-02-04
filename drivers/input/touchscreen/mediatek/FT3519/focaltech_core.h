@@ -243,7 +243,7 @@ int fts_read(u8 *cmd, u32 cmdlen, u8 *data, u32 datalen);
 int fts_read_reg(u8 addr, u8 *value);
 int fts_write(u8 *writebuf, u32 writelen);
 int fts_write_reg(u8 addr, u8 value);
-void fts_hid2std(void);
+extern void fts_hid2std(void);
 int fts_bus_init(struct fts_ts_data *ts_data);
 int fts_bus_exit(struct fts_ts_data *ts_data);
 
@@ -290,7 +290,7 @@ void fts_prc_queue_work(struct fts_ts_data *ts_data);
 /* FW upgrade */
 int fts_fwupg_init(struct fts_ts_data *ts_data);
 int fts_fwupg_exit(struct fts_ts_data *ts_data);
-int fts_upgrade_bin(char *fw_name, bool force);
+extern int fts_upgrade_bin(char *fw_name, bool force);
 int fts_enter_test_environment(bool test_state);
 
 /* Other */
