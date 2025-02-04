@@ -331,6 +331,7 @@ int fts_gesture_readdata(struct fts_ts_data *ts_data, u8 *data)
     fts_gesture_report(input_dev, gesture->gesture_id);
     return 0;
 }
+EXPORT_SYMBOL(fts_gesture_readdata);
 
 void fts_gesture_recovery(struct fts_ts_data *ts_data)
 {
@@ -345,6 +346,7 @@ void fts_gesture_recovery(struct fts_ts_data *ts_data)
         fts_write_reg(FTS_REG_GESTURE_EN, ENABLE);
     }
 }
+EXPORT_SYMBOL(fts_gesture_recovery);
 
 int fts_gesture_suspend(struct fts_ts_data *ts_data)
 {
@@ -378,6 +380,7 @@ int fts_gesture_suspend(struct fts_ts_data *ts_data)
     FTS_FUNC_EXIT();
     return 0;
 }
+EXPORT_SYMBOL(fts_gesture_suspend);
 
 int fts_gesture_resume(struct fts_ts_data *ts_data)
 {
@@ -405,6 +408,7 @@ int fts_gesture_resume(struct fts_ts_data *ts_data)
     FTS_FUNC_EXIT();
     return 0;
 }
+EXPORT_SYMBOL(fts_gesture_resume);
 
 int fts_gesture_init(struct fts_ts_data *ts_data)
 {
@@ -450,6 +454,7 @@ int fts_gesture_init(struct fts_ts_data *ts_data)
     FTS_FUNC_EXIT();
     return 0;
 }
+EXPORT_SYMBOL(fts_gesture_init);
 
 int fts_gesture_exit(struct fts_ts_data *ts_data)
 {
@@ -458,3 +463,9 @@ int fts_gesture_exit(struct fts_ts_data *ts_data)
     FTS_FUNC_EXIT();
     return 0;
 }
+EXPORT_SYMBOL(fts_gesture_exit);
+
+MODULE_AUTHOR("Author: Focaltech Driver Team");
+MODULE_AUTHOR("Frankie Yuen <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech FT3519 I2C Touchscreen Driver");
+MODULE_LICENSE("GPL v2");

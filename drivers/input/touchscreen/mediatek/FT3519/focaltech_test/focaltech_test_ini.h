@@ -1,5 +1,5 @@
 /************************************************************************
-* Copyright (c) 2012-2020, Focaltech Systems (R)£¬All Rights Reserved.
+* Copyright (c) 2012-2020, Focaltech Systems (R)ï¿½ï¿½All Rights Reserved.
 *
 * File Name: focaltech_test_ini.h
 *
@@ -52,7 +52,7 @@ struct ini_section {
 };
 
 struct ini_data {
-    char *data;
+    u8 *data;
     int length;
     int keyword_num_total;
     int section_num;

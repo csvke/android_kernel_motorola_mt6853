@@ -33,6 +33,8 @@
 * Included header files
 *****************************************************************************/
 #include "focaltech_test.h"
+#include <linux/uaccess.h>
+#include <linux/version.h>
 
 /*****************************************************************************
 * Private constant and macro definitions using #define
@@ -1175,34 +1177,39 @@ void show_data_mc_sc(int *data)
 /* mc_sc end*/
 
 #if CSV_SUPPORT || TXT_SUPPORT
-static int fts_test_save_test_data(char *file_name, char *data_buf, int len)
+static int fts_test_save_test_data(char *file_name, u8 *data, u32 data_len)
 {
-    struct file *pfile = NULL;
-    char filepath[FILE_NAME_LENGTH] = { 0 };
-    loff_t pos;
+    struct file *filp;
+    loff_t pos = 0;
+    ssize_t ret;
+
+    if ((NULL == file_name) || (NULL == data)) {
+        FTS_ERROR("filename/data is NULL");
+        return -EINVAL;
+    }
+
+    filp = filp_open(file_name, O_WRONLY | O_CREAT, 0644);
+    if (IS_ERR(filp)) {
+        FTS_ERROR("open %s file fail", file_name);
+        return PTR_ERR(filp);
+    }
+
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(3, 1, 0)
     mm_segment_t old_fs;
-
-    FTS_TEST_FUNC_ENTER();
-    memset(filepath, 0, sizeof(filepath));
-    snprintf(filepath, FILE_NAME_LENGTH, "%s%s", FTS_INI_FILE_PATH, file_name);
-    FTS_INFO("save test data to %s", filepath);
-    if (NULL == pfile) {
-        pfile = filp_open(filepath, O_TRUNC | O_CREAT | O_RDWR, 0);
-    }
-    if (IS_ERR(pfile)) {
-        FTS_TEST_ERROR("error occured while opening file %s.",  filepath);
-        return -EIO;
-    }
-
     old_fs = get_fs();
     set_fs(KERNEL_DS);
-    pos = 0;
-    vfs_write(pfile, data_buf, len, &pos);
-    filp_close(pfile, NULL);
+    ret = vfs_write(filp, data, data_len, &pos);
     set_fs(old_fs);
+#else
+    ret = kernel_write(filp, data, data_len, &pos);
+#endif
 
-    FTS_TEST_FUNC_EXIT();
-    return 0;
+    if (ret < 0) {
+        FTS_ERROR("write %s file fail", file_name);
+    }
+
+    filp_close(filp, NULL);
+    return ret;
 }
 
 #if defined(TEST_SAVE_FAIL_RESULT) && TEST_SAVE_FAIL_RESULT
@@ -2216,6 +2223,7 @@ int fts_test_init(struct fts_ts_data *ts_data)
 
     return ret;
 }
+EXPORT_SYMBOL(fts_test_init);
 
 int fts_test_exit(struct fts_ts_data *ts_data)
 {
@@ -2226,3 +2234,9 @@ int fts_test_exit(struct fts_ts_data *ts_data)
     FTS_TEST_FUNC_EXIT();
     return 0;
 }
+EXPORT_SYMBOL(fts_test_exit);
+
+MODULE_AUTHOR("Author: Focaltech Driver Team");
+MODULE_AUTHOR("Frankie Yuen <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech FT3519 I2C Touchscreen Driver");
+MODULE_LICENSE("GPL v2");

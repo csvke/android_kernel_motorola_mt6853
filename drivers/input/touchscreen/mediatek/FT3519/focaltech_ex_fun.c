@@ -33,6 +33,8 @@
 * 1.Included header files
 *****************************************************************************/
 #include "focaltech_core.h"
+#include <linux/proc_fs.h>
+#include <linux/seq_file.h>
 
 /*****************************************************************************
 * Private constant and macro definitions using #define
@@ -84,6 +86,9 @@ static struct rwreg_operation_t {
 /*****************************************************************************
 * Static function prototypes
 *****************************************************************************/
+// csvke: WIP: debug functions are not enabled becasue there's errors in the code compiling with kernel 6.x.x
+#ifdef ENABLE_DEBUG_FUNCTIONS
+
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
 static ssize_t fts_debug_write(
     struct file *filp, const char __user *buff, size_t count, loff_t *ppos)
@@ -298,10 +303,35 @@ proc_read_err:
     return ret;
 }
 
-static const struct file_operations fts_proc_fops = {
-    .owner  = THIS_MODULE,
-    .read   = fts_debug_read,
-    .write  = fts_debug_write,
+// csvke: Define the struct fts_proc type
+struct fts_proc {
+    struct proc_dir_entry *proc_entry;
+};
+
+// Define the fts_debug_show function
+static int fts_debug_show(struct seq_file *m, void *v)
+{
+    // csvke: WIP: Implement your debug show logic here
+    return 0;
+}
+
+// csvke: Define the fts_proc_open function
+static int fts_proc_open(struct inode *inode, struct file *file)
+{
+    return single_open(file, fts_debug_show, PDE_DATA(inode));
+}
+
+// csvke: changes for more recent kernel
+static const struct proc_ops fts_proc_ops = {
+    .proc_open = fts_proc_open,
+    .proc_read = seq_read,
+    .proc_lseek = seq_lseek,
+    .proc_release = single_release,
+    .proc_read = fts_debug_read,
+    .proc_write = fts_debug_write,
+    // .owner  = THIS_MODULE,
+    // .read   = fts_debug_read,
+    // .write  = fts_debug_write,
 };
 #else
 static int fts_debug_write(
@@ -520,26 +550,19 @@ proc_read_err:
 
 int fts_create_apk_debug_channel(struct fts_ts_data *ts_data)
 {
-    struct ftxxxx_proc *proc = &ts_data->proc;
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
-    proc->proc_entry = proc_create(PROC_NAME, 0777, NULL, &fts_proc_fops);
+    struct fts_proc *proc = &ts_data->proc;
+
+    proc->proc_entry = proc_create(PROC_NAME, 0777, NULL, &fts_proc_ops);
     if (NULL == proc->proc_entry) {
         FTS_ERROR("create proc entry fail");
         return -ENOMEM;
     }
-#else
-    proc->proc_entry = create_proc_entry(PROC_NAME, 0777, NULL);
-    if (NULL == proc->proc_entry) {
-        FTS_ERROR("create proc entry fail");
-        return -ENOMEM;
-    }
-    proc->proc_entry->write_proc = fts_debug_write;
-    proc->proc_entry->read_proc = fts_debug_read;
-#endif
 
     FTS_INFO("Create proc entry success!");
     return 0;
 }
+EXPORT_SYMBOL(fts_create_apk_debug_channel);
+
 
 void fts_release_apk_debug_channel(struct fts_ts_data *ts_data)
 {
@@ -553,6 +576,9 @@ void fts_release_apk_debug_channel(struct fts_ts_data *ts_data)
 #endif
     }
 }
+EXPORT_SYMBOL(fts_release_apk_debug_channel);
+
+#endif
 
 /************************************************************************
  * sysfs interface
@@ -1209,9 +1235,16 @@ int fts_create_sysfs(struct fts_ts_data *ts_data)
 
     return ret;
 }
+EXPORT_SYMBOL(fts_create_sysfs);
 
 int fts_remove_sysfs(struct fts_ts_data *ts_data)
 {
     sysfs_remove_group(&ts_data->dev->kobj, &fts_attribute_group);
     return 0;
 }
+EXPORT_SYMBOL(fts_remove_sysfs);
+
+MODULE_AUTHOR("Author: Focaltech Driver Team");
+MODULE_AUTHOR("Frankie Yuen <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech FT3519 I2C Touchscreen Driver");
+MODULE_LICENSE("GPL v2");

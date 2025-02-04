@@ -192,3 +192,8 @@ struct upgrade_func upgrade_func_ft5452i = {
     .hid_supported = false,
     .upgrade = fts_ft5452i_upgrade,
 };
+
+MODULE_AUTHOR("Author: Focaltech Driver Team");
+MODULE_AUTHOR("Frankie Yuen <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech FT3519 I2C Touchscreen Driver");
+MODULE_LICENSE("GPL v2");

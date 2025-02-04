@@ -69,7 +69,7 @@
 /*****************************************************************************
 * Global variable or extern global variabls/functions
 *****************************************************************************/
-struct fts_ts_data *fts_data;
+struct fts_ts_data *fts_data = NULL;
 
 /*****************************************************************************
 * Static function prototypes
@@ -1449,15 +1449,17 @@ static int fts_parse_dt(struct device *dev, struct fts_ts_platform_data *pdata)
     }
 
     /* reset, irq gpio info */
-    pdata->reset_gpio = of_get_named_gpio_flags(np, "focaltech,reset-gpio",
-                        0, &pdata->reset_gpio_flags);
-    if (pdata->reset_gpio < 0)
+    pdata->reset_gpio = of_get_named_gpio(np, "focaltech,reset-gpio", 0);
+    if (pdata->reset_gpio < 0) {
         FTS_ERROR("Unable to get reset_gpio");
+        return pdata->reset_gpio;
+    }
 
-    pdata->irq_gpio = of_get_named_gpio_flags(np, "focaltech,irq-gpio",
-                      0, &pdata->irq_gpio_flags);
-    if (pdata->irq_gpio < 0)
+    pdata->irq_gpio = of_get_named_gpio(np, "focaltech,irq-gpio", 0);
+    if (pdata->irq_gpio < 0) {
         FTS_ERROR("Unable to get irq_gpio");
+        return pdata->irq_gpio;
+    }
 
     ret = of_property_read_u32(np, "focaltech,max-touch-number", &temp_val);
     if (ret < 0) {
@@ -1501,7 +1503,7 @@ static int fb_notifier_callback(struct notifier_block *self,
         return 0;
     }
 
-    if (!(event == FB_EARLY_EVENT_BLANK || event == FB_EVENT_BLANK)) {
+    if (!(event == FB_EVENT_BLANK || event == FB_EVENT_BLANK)) {
         FTS_INFO("event(%lu) do not need process\n", event);
         return 0;
     }
@@ -1510,14 +1512,14 @@ static int fb_notifier_callback(struct notifier_block *self,
     FTS_INFO("FB event:%lu,blank:%d", event, *blank);
     switch (*blank) {
     case FB_BLANK_UNBLANK:
-        if (FB_EARLY_EVENT_BLANK == event) {
+        if (FB_EVENT_BLANK == event) {
             FTS_INFO("resume: event = %lu, not care\n", event);
         } else if (FB_EVENT_BLANK == event) {
             queue_work(fts_data->ts_workqueue, &fts_data->resume_work);
         }
         break;
     case FB_BLANK_POWERDOWN:
-        if (FB_EARLY_EVENT_BLANK == event) {
+        if (FB_EVENT_BLANK == event) {
             cancel_work_sync(&fts_data->resume_work);
             fts_ts_suspend(ts_data->dev);
         } else if (FB_EVENT_BLANK == event) {
@@ -1759,10 +1761,12 @@ static int fts_ts_probe_entry(struct fts_ts_data *ts_data)
         goto err_irq_req;
     }
 
+    #ifdef ENABLE_DEBUG_FUNCTIONS // csvke: WIP: Enable debug functions
     ret = fts_create_apk_debug_channel(ts_data);
     if (ret) {
         FTS_ERROR("create apk debug node fail");
     }
+    #endif
 
     ret = fts_create_sysfs(ts_data);
     if (ret) {
@@ -1887,7 +1891,7 @@ static int fts_ts_remove_entry(struct fts_ts_data *ts_data)
     fts_point_report_check_exit(ts_data);
 #endif
 
-    fts_release_apk_debug_channel(ts_data);
+    // fts_release_apk_debug_channel(ts_data); // csvke: WIP: Enable debug functions
     fts_remove_sysfs(ts_data);
     fts_ex_mode_exit(ts_data);
 
@@ -2063,7 +2067,8 @@ static const struct dev_pm_ops fts_dev_pm_ops = {
 * TP Driver
 *****************************************************************************/
 
-static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *id)
+// static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *id)
+static int fts_ts_probe(struct i2c_client *client)
 {
     int ret = 0;
     struct fts_ts_data *ts_data = NULL;
@@ -2100,9 +2105,9 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
     return 0;
 }
 
-static int fts_ts_remove(struct i2c_client *client)
+static void fts_ts_remove(struct i2c_client *client)
 {
-    return fts_ts_remove_entry(i2c_get_clientdata(client));
+    fts_ts_remove_entry(i2c_get_clientdata(client));
 }
 
 static const struct i2c_device_id fts_ts_id[] = {
@@ -2149,6 +2154,7 @@ static void __exit fts_ts_exit(void)
 module_init(fts_ts_init);
 module_exit(fts_ts_exit);
 
-MODULE_AUTHOR("FocalTech Driver Team");
-MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
+MODULE_AUTHOR("Author: Focaltech Driver Team");
+MODULE_AUTHOR("Frankie Yuen <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech FT3519 I2C Touchscreen Driver");
 MODULE_LICENSE("GPL v2");

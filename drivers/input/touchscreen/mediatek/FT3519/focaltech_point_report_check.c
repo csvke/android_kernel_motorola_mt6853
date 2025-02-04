@@ -127,3 +127,7 @@ int fts_point_report_check_exit(struct fts_ts_data *ts_data)
 }
 #endif /* FTS_POINT_REPORT_CHECK_EN */
 
+MODULE_AUTHOR("Author: Focaltech Driver Team");
+MODULE_AUTHOR("Frankie Yuen <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech FT3519 I2C Touchscreen Driver");
+MODULE_LICENSE("GNU v2");

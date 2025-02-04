@@ -1,18 +1,30 @@
 # Makefile for the focaltech touchscreen drivers.
 
+obj-m   +=  focaltech_core.o
+obj-m   +=  focaltech_esdcheck.o
+obj-m   +=  focaltech_ex_fun.o
+obj-m   +=  focaltech_ex_mode.o
+obj-m   +=  focaltech_flash.o
+obj-m   +=  focaltech_gesture.o
+obj-m   +=  focaltech_i2c.o
+obj-m   +=  focaltech_point_report_check.o
 
-obj-$(CONFIG_TOUCHSCREEN_FT3519)	+=  focaltech_core.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)	+=  focaltech_ex_fun.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)	+=  focaltech_ex_mode.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)	+=  focaltech_gesture.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)	+=  focaltech_esdcheck.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)   +=  focaltech_point_report_check.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)   +=  focaltech_test/
+obj-m   +=  focaltech_test/focaltech_test.o
+obj-m   +=  focaltech_test/focaltech_test_ini.o
 
+obj-m   +=  focaltech_flash/focaltech_upgrade_ft5452i.o
 
-obj-$(CONFIG_TOUCHSCREEN_FT3519)	+=  focaltech_flash.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)   +=  focaltech_flash/
+KDIR := /lib/modules/$(shell uname -r)/build
+PWD := $(shell pwd)
+EXTRA_CFLAGS := -I$(KDIR)/include -I$(KDIR)/drivers/input/touchscreen -fno-sanitize=all
+KCOV_INSTRUMENT := n
 
+all:
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
 
+clean:
+	$(MAKE) -C $(KDIR) M=$(PWD) clean
 
-obj-$(CONFIG_TOUCHSCREEN_FT3519)   +=  focaltech_i2c.o
+install:
+	sudo cp focaltech_core.ko /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/
+	sudo depmod -a

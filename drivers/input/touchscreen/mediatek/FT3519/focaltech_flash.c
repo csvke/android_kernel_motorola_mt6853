@@ -35,6 +35,9 @@
 #include "focaltech_core.h"
 #include "focaltech_flash.h"
 
+#include <linux/fs.h>
+#include <linux/uaccess.h>
+#include <linux/version.h>
 /*****************************************************************************
 * Private constant and macro definitions using #define
 *****************************************************************************/
@@ -1121,10 +1124,12 @@ static int fts_read_file(char *file_name, u8 **file_buf)
     int ret = 0;
     char file_path[FILE_NAME_LENGTH] = { 0 };
     struct file *filp = NULL;
-    struct inode *inode;
-    mm_segment_t old_fs;
     loff_t pos;
     loff_t file_len = 0;
+
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(3, 1, 0)
+    mm_segment_t old_fs;
+#endif
 
     if ((NULL == file_name) || (NULL == file_buf)) {
         FTS_ERROR("filename/filebuf is NULL");
@@ -1138,30 +1143,44 @@ static int fts_read_file(char *file_name, u8 **file_buf)
         return -ENOENT;
     }
 
-#if 1
-    inode = filp->f_inode;
-#else
-    /* reserved for linux earlier verion */
-    inode = filp->f_dentry->d_inode;
-#endif
-
-    file_len = inode->i_size;
-    *file_buf = (u8 *)vmalloc(file_len);
-    if (NULL == *file_buf) {
-        FTS_ERROR("file buf malloc fail");
-        filp_close(filp, NULL);
-        return -ENOMEM;
-    }
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(3, 1, 0)
     old_fs = get_fs();
     set_fs(KERNEL_DS);
+    file_len = vfs_llseek(filp, 0, SEEK_END);
+    vfs_llseek(filp, 0, SEEK_SET);
+    *file_buf = kzalloc(file_len, GFP_KERNEL);
+    if (NULL == *file_buf) {
+        FTS_ERROR("kzalloc for file_buf fail");
+        ret = -ENOMEM;
+        goto err_kzalloc;
+    }
     pos = 0;
-    ret = vfs_read(filp, *file_buf, file_len , &pos);
-    if (ret < 0)
-        FTS_ERROR("read file fail");
-    FTS_INFO("file len:%d read len:%d pos:%d", (u32)file_len, ret, (u32)pos);
-    filp_close(filp, NULL);
+    ret = vfs_read(filp, *file_buf, file_len, &pos);
     set_fs(old_fs);
+#else
+    file_len = i_size_read(file_inode(filp));
+    *file_buf = kzalloc(file_len, GFP_KERNEL);
+    if (NULL == *file_buf) {
+        FTS_ERROR("kzalloc for file_buf fail");
+        ret = -ENOMEM;
+        goto err_kzalloc;
+    }
+    pos = 0;
+    ret = kernel_read(filp, *file_buf, file_len, &pos);
+#endif
 
+    if (ret < 0) {
+        FTS_ERROR("read %s file fail", file_path);
+        goto err_read;
+    }
+
+    filp_close(filp, NULL);
+    return file_len;
+
+err_read:
+    kfree(*file_buf);
+err_kzalloc:
+    filp_close(filp, NULL);
     return ret;
 }
 
@@ -2079,6 +2098,7 @@ int fts_fwupg_init(struct fts_ts_data *ts_data)
 
     return 0;
 }
+EXPORT_SYMBOL(fts_fwupg_init);
 
 int fts_fwupg_exit(struct fts_ts_data *ts_data)
 {
@@ -2095,3 +2115,9 @@ int fts_fwupg_exit(struct fts_ts_data *ts_data)
     FTS_FUNC_EXIT();
     return 0;
 }
+EXPORT_SYMBOL(fts_fwupg_exit);
+
+MODULE_AUTHOR("Author: Focaltech Driver Team");
+MODULE_AUTHOR("Frankie Yuen <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech FT3519 I2C Touchscreen Driver");
+MODULE_LICENSE("GPL v2");

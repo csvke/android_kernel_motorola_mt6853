@@ -460,3 +460,7 @@ int fts_esdcheck_exit(struct fts_ts_data *ts_data)
 }
 #endif /* FTS_ESDCHECK_EN */
 
+MODULE_AUTHOR("Author: Focaltech Driver Team");
+MODULE_AUTHOR("Frankie Yuen <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech FT3519 I2C Touchscreen Driver");
+MODULE_LICENSE("GNU v2");

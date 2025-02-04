@@ -1,5 +1,5 @@
 /************************************************************************
-* Copyright (c) 2012-2020, Focaltech Systems (R)£¬All Rights Reserved.
+* Copyright (c) 2012-2020, Focaltech Systems (R)ï¿½ï¿½All Rights Reserved.
 *
 * File Name: focaltech_test_ini.c
 *
@@ -11,6 +11,8 @@
 *
 ************************************************************************/
 #include "focaltech_test.h"
+#include <linux/uaccess.h>
+#include <linux/version.h>
 
 /*****************************************************************************
 * Private constant and macro definitions using #define
@@ -262,44 +264,67 @@ static int fts_test_get_ini_size(char *config_name)
     return fsize;
 }
 
-static int fts_test_read_ini_data(char *config_name, char *config_buf)
+static int fts_test_read_ini_data(char *file_name, u8 **file_buf)
 {
-    struct file *pfile = NULL;
-    struct inode *inode = NULL;
-    off_t fsize = 0;
-    char filepath[FILE_NAME_LENGTH] = { 0 };
-    loff_t pos = 0;
+    int ret = 0;
+    struct file *filp = NULL;
+    loff_t pos;
+    loff_t file_len = 0;
+
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(3, 1, 0)
     mm_segment_t old_fs;
-
-    FTS_TEST_FUNC_ENTER();
-
-    memset(filepath, 0, sizeof(filepath));
-    snprintf(filepath, FILE_NAME_LENGTH, "%s%s",
-             FTS_INI_FILE_PATH, config_name);
-    if (NULL == pfile) {
-        pfile = filp_open(filepath, O_RDONLY, 0);
-    }
-    if (IS_ERR(pfile)) {
-        FTS_TEST_ERROR("error occured while opening file %s.",  filepath);
-        return -EIO;
-    }
-
-#if 1
-    inode = pfile->f_inode;
-#else
-    /* reserved for linux earlier verion */
-    inode = pfile->f_dentry->d_inode;
 #endif
-    fsize = inode->i_size;
+
+    if ((NULL == file_name) || (NULL == file_buf)) {
+        FTS_TEST_ERROR("filename/filebuf is NULL");
+        return -EINVAL;
+    }
+
+    filp = filp_open(file_name, O_RDONLY, 0);
+    if (IS_ERR(filp)) {
+        FTS_TEST_ERROR("open %s file fail", file_name);
+        return PTR_ERR(filp);
+    }
+
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(3, 1, 0)
     old_fs = get_fs();
     set_fs(KERNEL_DS);
+    file_len = vfs_llseek(filp, 0, SEEK_END);
+    vfs_llseek(filp, 0, SEEK_SET);
+    *file_buf = kzalloc(file_len, GFP_KERNEL);
+    if (NULL == *file_buf) {
+        FTS_TEST_ERROR("kzalloc for file_buf fail");
+        ret = -ENOMEM;
+        goto err_kzalloc;
+    }
     pos = 0;
-    vfs_read(pfile, config_buf, fsize, &pos);
-    filp_close(pfile, NULL);
+    ret = vfs_read(filp, *file_buf, file_len, &pos);
     set_fs(old_fs);
+#else
+    file_len = i_size_read(file_inode(filp));
+    *file_buf = kzalloc(file_len, GFP_KERNEL);
+    if (NULL == *file_buf) {
+        FTS_TEST_ERROR("kzalloc for file_buf fail");
+        ret = -ENOMEM;
+        goto err_kzalloc;
+    }
+    pos = 0;
+    ret = kernel_read(filp, *file_buf, file_len, &pos);
+#endif
 
-    FTS_TEST_FUNC_EXIT();
-    return 0;
+    if (ret < 0) {
+        FTS_TEST_ERROR("read %s file fail", file_name);
+        goto err_read;
+    }
+
+    filp_close(filp, NULL);
+    return file_len;
+
+err_read:
+    kfree(*file_buf);
+err_kzalloc:
+    filp_close(filp, NULL);
+    return ret;
 }
 
 static int fts_test_get_ini_default(struct ini_data *ini, char *fwname)
@@ -307,27 +332,15 @@ static int fts_test_get_ini_default(struct ini_data *ini, char *fwname)
     int ret = 0;
     int inisize = 0;
 
-    inisize = fts_test_get_ini_size(fwname);
-    FTS_TEST_DBG("ini file size:%d", inisize);
-    if (inisize <= 0) {
-        FTS_TEST_ERROR("get ini file size fail");
-        return -ENODATA;
+    ret = fts_test_read_ini_data(fwname, &ini->data);
+    if (ret < 0) {
+        FTS_TEST_ERROR("read ini data from %s fail", fwname);
+        return ret;
     }
 
-    ini->data = vmalloc(inisize + 1);
-    if (NULL == ini->data) {
-        FTS_TEST_ERROR("malloc memory for ini data fail");
-        return -ENOMEM;
-    }
-    memset(ini->data, 0, inisize + 1);
-    ini->length = inisize + 1;
-
-    ret = fts_test_read_ini_data(fwname, ini->data);
-    if (ret) {
-        FTS_TEST_ERROR("read ini file fail");
-        return -ENODATA;
-    }
-    ini->data[inisize] = '\n';  /* last line is null line */
+    inisize = ret;
+    ini->length = inisize;
+    FTS_TEST_INFO("read ini data from %s, size:%d", fwname, inisize);
 
     return 0;
 }
@@ -1406,3 +1419,8 @@ get_ini_err:
 
     return ret;
 }
+
+MODULE_AUTHOR("Author: Focaltech Driver Team");
+MODULE_AUTHOR("Frankie Yuen <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech FT3519 I2C Touchscreen Driver");
+MODULE_LICENSE("GPL v2");
