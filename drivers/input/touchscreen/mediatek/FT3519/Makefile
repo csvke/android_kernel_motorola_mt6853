@@ -25,7 +25,10 @@ all:
 
 clean:
 	$(MAKE) -C $(KDIR) M=$(PWD) clean
+	# Ensure these files are not deleted
+	touch include/firmware/fw_sample.i include/pramboot/FT5452i_Pramboot_v4.1_20210427.i
 
 install:
-	sudo cp focaltech_core.ko /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/
-	sudo depmod -a
+	find . -name "*.ko" -exec sudo cp {} /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ \;
+	cd /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ && sudo find . -name "*.ko" -exec xz -f {} \;
+	sudo depmod -a || true
