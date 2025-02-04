@@ -1,18 +1,21 @@
 # Makefile for the focaltech touchscreen drivers.
 
+KERNEL_SRC ?= /lib/modules/$(shell uname -r)/build
+PWD := $(shell pwd)
 
-obj-$(CONFIG_TOUCHSCREEN_FT3519)	+=  focaltech_core.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)	+=  focaltech_ex_fun.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)	+=  focaltech_ex_mode.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)	+=  focaltech_gesture.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)	+=  focaltech_esdcheck.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)   +=  focaltech_point_report_check.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)   +=  focaltech_test/
+obj-m += focaltech_core.o
+obj-m += focaltech_ex_fun.o
+obj-m += focaltech_ex_mode.o
+obj-m += focaltech_gesture.o
+obj-m += focaltech_esdcheck.o
+obj-m += focaltech_point_report_check.o
+obj-m += focaltech_test/
+obj-m += focaltech_flash.o
+obj-m += focaltech_flash/
+obj-m += focaltech_i2c.o
 
+all:
+	$(MAKE) -C $(KERNEL_SRC) M=$(PWD) modules
 
-obj-$(CONFIG_TOUCHSCREEN_FT3519)	+=  focaltech_flash.o
-obj-$(CONFIG_TOUCHSCREEN_FT3519)   +=  focaltech_flash/
-
-
-
-obj-$(CONFIG_TOUCHSCREEN_FT3519)   +=  focaltech_i2c.o
+clean:
+	$(MAKE) -C $(KERNEL_SRC) M=$(PWD) clean

@@ -298,11 +298,20 @@ proc_read_err:
     return ret;
 }
 
+// csvke: add for proc_ops to reflect the change of kernel API
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
+static const struct proc_ops fts_proc_ops = {
+    .proc_read = fts_proc_read,
+    .proc_write = fts_proc_write,
+};
+#else
 static const struct file_operations fts_proc_fops = {
     .owner  = THIS_MODULE,
     .read   = fts_debug_read,
     .write  = fts_debug_write,
 };
+#endif
+
 #else
 static int fts_debug_write(
     struct file *filp, const char __user *buff, unsigned long len, void *data)
@@ -518,10 +527,17 @@ proc_read_err:
 }
 #endif
 
+// csvke: add for proc_ops to reflect the change of kernel API
 int fts_create_apk_debug_channel(struct fts_ts_data *ts_data)
 {
     struct ftxxxx_proc *proc = &ts_data->proc;
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0))
+    proc->proc_entry = proc_create(PROC_NAME, 0777, NULL, &fts_proc_ops);
+    if (NULL == proc->proc_entry) {
+        FTS_ERROR("create proc entry fail");
+        return -ENOMEM;
+    }
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
     proc->proc_entry = proc_create(PROC_NAME, 0777, NULL, &fts_proc_fops);
     if (NULL == proc->proc_entry) {
         FTS_ERROR("create proc entry fail");
