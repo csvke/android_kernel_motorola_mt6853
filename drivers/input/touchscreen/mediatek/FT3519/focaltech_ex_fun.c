@@ -301,8 +301,8 @@ proc_read_err:
 // csvke: add for proc_ops to reflect the change of kernel API
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
 static const struct proc_ops fts_proc_ops = {
-    .proc_read = fts_proc_read,
-    .proc_write = fts_proc_write,
+    .proc_read = fts_debug_read,
+    .proc_write = fts_debug_write,
 };
 #else
 static const struct file_operations fts_proc_fops = {
