@@ -1449,6 +1449,16 @@ static int fts_parse_dt(struct device *dev, struct fts_ts_platform_data *pdata)
     }
 
     /* reset, irq gpio info */
+    // csvke: of_get_named_gpio_flags is deprecated, add conditional compilation to use of_get_named_gpio for kernel version >= 5.1.0
+    #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0))
+    pdata->reset_gpio = of_get_named_gpio(np, "focaltech,reset-gpio", 0);
+    if (pdata->reset_gpio < 0)
+        FTS_ERROR("Unable to get reset_gpio");
+    
+    pdata->irq_gpio = of_get_named_gpio(np, "focaltech,irq-gpio", 0);
+    if (pdata->irq_gpio < 0)
+        FTS_ERROR("Unable to get irq_gpio");
+    #else
     pdata->reset_gpio = of_get_named_gpio_flags(np, "focaltech,reset-gpio",
                         0, &pdata->reset_gpio_flags);
     if (pdata->reset_gpio < 0)
@@ -1458,7 +1468,7 @@ static int fts_parse_dt(struct device *dev, struct fts_ts_platform_data *pdata)
                       0, &pdata->irq_gpio_flags);
     if (pdata->irq_gpio < 0)
         FTS_ERROR("Unable to get irq_gpio");
-
+    #endif
     ret = of_property_read_u32(np, "focaltech,max-touch-number", &temp_val);
     if (ret < 0) {
         FTS_ERROR("Unable to get max-touch-number, please check dts");
