@@ -1253,11 +1253,14 @@ err_bin:
     }
     return ret;
 }
+EXPORT_SYMBOL(fts_upgrade_bin);
 
 int fts_enter_test_environment(bool test_state)
 {
     return 0;
 }
+EXPORT_SYMBOL(fts_enter_test_environment);
+
 #if FTS_AUTO_LIC_UPGRADE_EN
 static int fts_lic_get_vid_in_tp(u16 *vid)
 {
@@ -2096,6 +2099,7 @@ int fts_fwupg_init(struct fts_ts_data *ts_data)
 
     return 0;
 }
+EXPORT_SYMBOL(fts_fwupg_init);
 
 int fts_fwupg_exit(struct fts_ts_data *ts_data)
 {
@@ -2112,6 +2116,7 @@ int fts_fwupg_exit(struct fts_ts_data *ts_data)
     FTS_FUNC_EXIT();
     return 0;
 }
+EXPORT_SYMBOL(fts_fwupg_exit);
 
 MODULE_AUTHOR("FocalTech Driver Team");
 MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");

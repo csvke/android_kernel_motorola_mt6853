@@ -556,6 +556,7 @@ int fts_create_apk_debug_channel(struct fts_ts_data *ts_data)
     FTS_INFO("Create proc entry success!");
     return 0;
 }
+EXPORT_SYMBOL(fts_create_apk_debug_channel);
 
 void fts_release_apk_debug_channel(struct fts_ts_data *ts_data)
 {
@@ -569,6 +570,7 @@ void fts_release_apk_debug_channel(struct fts_ts_data *ts_data)
 #endif
     }
 }
+EXPORT_SYMBOL(fts_release_apk_debug_channel);
 
 /************************************************************************
  * sysfs interface
@@ -596,16 +598,40 @@ static ssize_t fts_hw_reset_store(
 }
 
 /* fts_irq interface */
+/*
+csvke: not sure why the original codebase uses irq_to_desc which is not defined and is not meant to be used directly in driver code.
+Instead, irq_get_irq_data is used as it's the appropriate function to get irq_data from irq number from the public kernel API.
+However, The error indicates that struct irq_data does not have a member named depth. 
+To resolve this, you need to find an alternative way to get the required information. 
+Since irq_data does not have a depth member, you might need to adjust your approach.
+If you need to get the depth of the IRQ, you might need to use a different structure or method.
+However, if the depth information is not critical, you can remove or replace that part of the code.
+Left the original code commented out for reference.
+*/
 static ssize_t fts_irq_show(
     struct device *dev, struct device_attribute *attr, char *buf)
 {
     ssize_t count = 0;
-    struct irq_desc *desc = irq_to_desc(fts_data->irq);
+    struct irq_data *irq_data = irq_get_irq_data(fts_data->irq);
 
-    count = snprintf(buf, PAGE_SIZE, "irq_depth:%d\n", desc->depth);
+    if (irq_data) {
+        count = snprintf(buf, PAGE_SIZE, "irq found\n");
+    } else {
+        count = snprintf(buf, PAGE_SIZE, "irq_data not found\n");
+    }
 
     return count;
 }
+// static ssize_t fts_irq_show(
+//     struct device *dev, struct device_attribute *attr, char *buf)
+// {
+//     ssize_t count = 0;
+//     struct irq_desc *desc = irq_to_desc(fts_data->irq);
+
+//     count = snprintf(buf, PAGE_SIZE, "irq_depth:%d\n", desc->depth);
+
+//     return count;
+// }
 
 static ssize_t fts_irq_store(
     struct device *dev,
@@ -1225,12 +1251,14 @@ int fts_create_sysfs(struct fts_ts_data *ts_data)
 
     return ret;
 }
+EXPORT_SYMBOL(fts_create_sysfs);
 
 int fts_remove_sysfs(struct fts_ts_data *ts_data)
 {
     sysfs_remove_group(&ts_data->dev->kobj, &fts_attribute_group);
     return 0;
 }
+EXPORT_SYMBOL(fts_remove_sysfs);
 
 MODULE_AUTHOR("FocalTech Driver Team");
 MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");

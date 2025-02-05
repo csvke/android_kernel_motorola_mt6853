@@ -279,6 +279,7 @@ int fts_ex_mode_recovery(struct fts_ts_data *ts_data)
 
     return 0;
 }
+EXPORT_SYMBOL(fts_ex_mode_recovery);
 
 int fts_ex_mode_init(struct fts_ts_data *ts_data)
 {
@@ -299,12 +300,14 @@ int fts_ex_mode_init(struct fts_ts_data *ts_data)
 
     return 0;
 }
+EXPORT_SYMBOL(fts_ex_mode_init);
 
 int fts_ex_mode_exit(struct fts_ts_data *ts_data)
 {
     sysfs_remove_group(&ts_data->dev->kobj, &fts_touch_mode_group);
     return 0;
 }
+EXPORT_SYMBOL(fts_ex_mode_exit);
 
 MODULE_AUTHOR("FocalTech Driver Team");
 MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
