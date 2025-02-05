@@ -3,32 +3,28 @@
 KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 
-obj-m += focaltech_core.o
-obj-m += focaltech_ex_fun.o
-obj-m += focaltech_ex_mode.o
-obj-m += focaltech_gesture.o
-obj-m += focaltech_esdcheck.o
-obj-m += focaltech_point_report_check.o
+# Define the main module and its components
+obj-m += focaltech-ft3519.o
 
-obj-m += focaltech_test/
-obj-m += focaltech_test/focaltech_test.o
-obj-m += focaltech_test/focaltech_test_ini.o
-
-obj-m += focaltech_test/supported_ic/focaltech_test_ft5452i.o
-
-obj-m += focaltech_flash.o
-
-obj-m += focaltech_flash/
-obj-m += focaltech_flash/focaltech_upgrade_ft5452i.o
-
-obj-m += focaltech_i2c.o
+focaltech-ft3519-objs :=	focaltech_core.o \
+							focaltech_ex_fun.o \
+							focaltech_ex_mode.o \
+							focaltech_gesture.o \
+                         	focaltech_esdcheck.o \
+                         	focaltech_point_report_check.o \
+                         	focaltech_test/focaltech_test.o \
+                         	focaltech_test/focaltech_test_ini.o \
+                         	focaltech_test/supported_ic/focaltech_test_ft5452i.o \
+                         	focaltech_flash.o \
+                         	focaltech_flash/focaltech_upgrade_ft5452i.o \
+                         	focaltech_i2c.o
 
 all:
 	$(MAKE) -C $(KDIR) M=$(PWD) modules
 
-install:
-	sudo $(MAKE) -C $(KDIR) M=$(PWD) modules_install
-	sudo depmod -a
+# install:
+# 	sudo $(MAKE) -C $(KDIR) M=$(PWD) modules_install
+# 	sudo depmod -a
 
 package:
 	MODULE_DIR="/lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/"
