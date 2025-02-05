@@ -1,5 +1,5 @@
 /************************************************************************
-* Copyright (c) 2012-2020, Focaltech Systems (R)£¬All Rights Reserved.
+* Copyright (c) 2012-2020, Focaltech Systems (R)ï¿½ï¿½All Rights Reserved.
 *
 * File Name: focaltech_test_ini.h
 *
@@ -132,7 +132,7 @@ struct ini_data {
 /*****************************************************************************
 * Global variable or extern global variabls/functions
 *****************************************************************************/
-int fts_test_get_testparam_from_ini(char *config_name);
+extern int fts_test_get_testparam_from_ini(char *config_name);
 int get_keyword_value(char *section, char *name, int *value);
 
 #define get_value_interface(name, value) \

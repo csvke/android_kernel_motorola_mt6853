@@ -1,5 +1,5 @@
 /************************************************************************
-* Copyright (c) 2012-2020, Focaltech Systems (R)£¬All Rights Reserved.
+* Copyright (c) 2012-2020, Focaltech Systems (R)ï¿½ï¿½All Rights Reserved.
 *
 * File Name: focaltech_test_ini.c
 *
@@ -11,7 +11,11 @@
 *
 ************************************************************************/
 #include "focaltech_test.h"
-
+// csvke: Fix for recent kernel versions using kernel_read and kernel_write
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0)
+#include <linux/uaccess.h>
+#endif
 /*****************************************************************************
 * Private constant and macro definitions using #define
 *****************************************************************************/
@@ -262,6 +266,7 @@ static int fts_test_get_ini_size(char *config_name)
     return fsize;
 }
 
+// csvke: Fix for recent kernel versions using kernel_read and kernel_write
 static int fts_test_read_ini_data(char *config_name, char *config_buf)
 {
     struct file *pfile = NULL;
@@ -269,7 +274,9 @@ static int fts_test_read_ini_data(char *config_name, char *config_buf)
     off_t fsize = 0;
     char filepath[FILE_NAME_LENGTH] = { 0 };
     loff_t pos = 0;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0)
     mm_segment_t old_fs;
+#endif
 
     FTS_TEST_FUNC_ENTER();
 
@@ -291,12 +298,19 @@ static int fts_test_read_ini_data(char *config_name, char *config_buf)
     inode = pfile->f_dentry->d_inode;
 #endif
     fsize = inode->i_size;
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0)
     old_fs = get_fs();
     set_fs(KERNEL_DS);
     pos = 0;
     vfs_read(pfile, config_buf, fsize, &pos);
-    filp_close(pfile, NULL);
     set_fs(old_fs);
+#else
+    pos = 0;
+    kernel_read(pfile, config_buf, fsize, &pos);
+#endif
+
+    filp_close(pfile, NULL);
 
     FTS_TEST_FUNC_EXIT();
     return 0;
@@ -1406,3 +1420,9 @@ get_ini_err:
 
     return ret;
 }
+EXPORT_SYMBOL(fts_test_get_testparam_from_ini);
+
+MODULE_AUTHOR("FocalTech Driver Team");
+MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
+MODULE_LICENSE("GPL v2");

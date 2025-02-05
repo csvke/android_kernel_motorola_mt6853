@@ -239,28 +239,28 @@ enum _FTS_BUS_TYPE {
 extern struct fts_ts_data *fts_data;
 
 /* communication interface */
-int fts_read(u8 *cmd, u32 cmdlen, u8 *data, u32 datalen);
+extern int fts_read(u8 *cmd, u32 cmdlen, u8 *data, u32 datalen);
 extern int fts_read_reg(u8 addr, u8 *value);
-int fts_write(u8 *writebuf, u32 writelen);
+extern int fts_write(u8 *writebuf, u32 writelen);
 int fts_write_reg(u8 addr, u8 value);
-void fts_hid2std(void);
-int fts_bus_init(struct fts_ts_data *ts_data);
+extern void fts_hid2std(void);
+extern int fts_bus_init(struct fts_ts_data *ts_data);
 extern int fts_bus_exit(struct fts_ts_data *ts_data);
 
 /* Gesture functions */
-int fts_gesture_init(struct fts_ts_data *ts_data);
+extern int fts_gesture_init(struct fts_ts_data *ts_data);
 extern int fts_gesture_exit(struct fts_ts_data *ts_data);
 extern void fts_gesture_recovery(struct fts_ts_data *ts_data);
-int fts_gesture_readdata(struct fts_ts_data *ts_data, u8 *data);
+extern int fts_gesture_readdata(struct fts_ts_data *ts_data, u8 *data);
 int fts_gesture_suspend(struct fts_ts_data *ts_data);
 int fts_gesture_resume(struct fts_ts_data *ts_data);
 
 /* Apk and functions */
-int fts_create_apk_debug_channel(struct fts_ts_data *);
+extern int fts_create_apk_debug_channel(struct fts_ts_data *);
 extern void fts_release_apk_debug_channel(struct fts_ts_data *);
 
 /* ADB functions */
-int fts_create_sysfs(struct fts_ts_data *ts_data);
+extern int fts_create_sysfs(struct fts_ts_data *ts_data);
 extern int fts_remove_sysfs(struct fts_ts_data *ts_data);
 
 /* ESD */
@@ -276,7 +276,7 @@ int fts_esdcheck_resume(void);
 
 /* Production test */
 #if FTS_TEST_EN
-int fts_test_init(struct fts_ts_data *ts_data);
+extern int fts_test_init(struct fts_ts_data *ts_data);
 extern int fts_test_exit(struct fts_ts_data *ts_data);
 #endif
 
@@ -288,18 +288,18 @@ void fts_prc_queue_work(struct fts_ts_data *ts_data);
 #endif
 
 /* FW upgrade */
-int fts_fwupg_init(struct fts_ts_data *ts_data);
+extern int fts_fwupg_init(struct fts_ts_data *ts_data);
 extern int fts_fwupg_exit(struct fts_ts_data *ts_data);
-int fts_upgrade_bin(char *fw_name, bool force);
-int fts_enter_test_environment(bool test_state);
+extern int fts_upgrade_bin(char *fw_name, bool force);
+extern int fts_enter_test_environment(bool test_state);
 
 /* Other */
-int fts_reset_proc(int hdelayms);
+extern int fts_reset_proc(int hdelayms);
 int fts_check_cid(struct fts_ts_data *ts_data, u8 id_h);
-int fts_wait_tp_to_valid(void);
+extern int fts_wait_tp_to_valid(void);
 void fts_release_all_finger(void);
 void fts_tp_state_recovery(struct fts_ts_data *ts_data);
-int fts_ex_mode_init(struct fts_ts_data *ts_data);
+extern int fts_ex_mode_init(struct fts_ts_data *ts_data);
 int fts_ex_mode_exit(struct fts_ts_data *ts_data);
 extern int fts_ex_mode_recovery(struct fts_ts_data *ts_data);
 

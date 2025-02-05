@@ -111,6 +111,7 @@ int fts_read(u8 *cmd, u32 cmdlen, u8 *data, u32 datalen)
     mutex_unlock(&ts_data->bus_lock);
     return ret;
 }
+EXPORT_SYMBOL(fts_read);
 
 int fts_write(u8 *writebuf, u32 writelen)
 {
@@ -143,6 +144,7 @@ int fts_write(u8 *writebuf, u32 writelen)
     mutex_unlock(&ts_data->bus_lock);
     return ret;
 }
+EXPORT_SYMBOL(fts_write);
 
 int fts_read_reg(u8 addr, u8 *value)
 {
@@ -158,6 +160,7 @@ int fts_write_reg(u8 addr, u8 value)
     buf[1] = value;
     return fts_write(buf, sizeof(buf));
 }
+EXPORT_SYMBOL(fts_write_reg);
 
 int fts_bus_init(struct fts_ts_data *ts_data)
 {
@@ -176,6 +179,7 @@ int fts_bus_init(struct fts_ts_data *ts_data)
     FTS_FUNC_EXIT();
     return 0;
 }
+EXPORT_SYMBOL(fts_bus_init);
 
 int fts_bus_exit(struct fts_ts_data *ts_data)
 {

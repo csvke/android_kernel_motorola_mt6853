@@ -10,6 +10,7 @@ obj-m += focaltech_gesture.o
 obj-m += focaltech_esdcheck.o
 obj-m += focaltech_point_report_check.o
 obj-m += focaltech_test/focaltech_test.o
+obj-m += focaltech_test/focaltech_test_ini.o
 obj-m += focaltech_flash.o
 obj-m += focaltech_flash/
 obj-m += focaltech_i2c.o

@@ -300,6 +300,7 @@ int fts_ex_mode_init(struct fts_ts_data *ts_data)
 
     return 0;
 }
+EXPORT_SYMBOL(fts_ex_mode_init);
 
 int fts_ex_mode_exit(struct fts_ts_data *ts_data)
 {

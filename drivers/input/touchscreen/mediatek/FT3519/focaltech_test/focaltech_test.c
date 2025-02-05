@@ -120,6 +120,7 @@ void print_buffer(int *buffer, int length, int line_num)
         tmpbuf = NULL;
     }
 }
+EXPORT_SYMBOL(print_buffer);
 
 /********************************************************************
  * test read/write interface
@@ -2232,6 +2233,7 @@ int fts_test_init(struct fts_ts_data *ts_data)
 
     return ret;
 }
+EXPORT_SYMBOL(fts_test_init);
 
 int fts_test_exit(struct fts_ts_data *ts_data)
 {

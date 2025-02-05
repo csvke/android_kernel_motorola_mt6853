@@ -556,6 +556,7 @@ int fts_create_apk_debug_channel(struct fts_ts_data *ts_data)
     FTS_INFO("Create proc entry success!");
     return 0;
 }
+EXPORT_SYMBOL(fts_create_apk_debug_channel);
 
 void fts_release_apk_debug_channel(struct fts_ts_data *ts_data)
 {
@@ -1226,6 +1227,7 @@ int fts_create_sysfs(struct fts_ts_data *ts_data)
 
     return ret;
 }
+EXPORT_SYMBOL(fts_create_sysfs);
 
 int fts_remove_sysfs(struct fts_ts_data *ts_data)
 {

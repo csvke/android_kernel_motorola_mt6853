@@ -331,6 +331,7 @@ int fts_gesture_readdata(struct fts_ts_data *ts_data, u8 *data)
     fts_gesture_report(input_dev, gesture->gesture_id);
     return 0;
 }
+EXPORT_SYMBOL(fts_gesture_readdata);
 
 void fts_gesture_recovery(struct fts_ts_data *ts_data)
 {
@@ -406,6 +407,7 @@ int fts_gesture_resume(struct fts_ts_data *ts_data)
     FTS_FUNC_EXIT();
     return 0;
 }
+EXPORT_SYMBOL(fts_gesture_resume);
 
 int fts_gesture_init(struct fts_ts_data *ts_data)
 {
@@ -451,6 +453,7 @@ int fts_gesture_init(struct fts_ts_data *ts_data)
     FTS_FUNC_EXIT();
     return 0;
 }
+EXPORT_SYMBOL(fts_gesture_init);
 
 int fts_gesture_exit(struct fts_ts_data *ts_data)
 {
