@@ -2103,13 +2103,13 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
     int ret = 0;
     struct fts_ts_data *ts_data = NULL;
 
-    FTS_INFO("Touch Screen(I2C BUS) driver prboe...");
+    FTS_INFO("Touch Screen(I2C BUS) driver probe...");
+
     if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
         FTS_ERROR("I2C not supported");
         return -ENODEV;
     }
 
-    /* malloc memory for global struct variable */
     ts_data = (struct fts_ts_data *)kzalloc(sizeof(*ts_data), GFP_KERNEL);
     if (!ts_data) {
         FTS_ERROR("allocate memory for fts_data fail");
@@ -2124,6 +2124,7 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
     ts_data->bus_type = BUS_TYPE_I2C;
     i2c_set_clientdata(client, ts_data);
 
+    FTS_INFO("Calling fts_ts_probe_entry");
     ret = fts_ts_probe_entry(ts_data);
     if (ret) {
         FTS_ERROR("Touch Screen(I2C BUS) driver probe fail");
@@ -2131,7 +2132,7 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
         return ret;
     }
 
-    FTS_INFO("Touch Screen(I2C BUS) driver prboe successfully");
+    FTS_INFO("Touch Screen(I2C BUS) driver probe successfully");
     return 0;
 }
 
@@ -2180,13 +2181,25 @@ static struct i2c_driver fts_ts_driver = {
 
 static int __init fts_ts_init(void)
 {
-    int ret = 0;
+    int ret;
+    struct fts_ts_data *ts_data;
 
     FTS_FUNC_ENTER();
-    ret = i2c_add_driver(&fts_ts_driver);
-    if ( ret != 0 ) {
-        FTS_ERROR("Focaltech touch screen driver init failed!");
+    FTS_INFO("Initializing FocalTech touch screen driver...");
+
+    ts_data = kzalloc(sizeof(*ts_data), GFP_KERNEL);
+    if (!ts_data) {
+        FTS_ERROR("Failed to allocate memory for ts_data");
+        return -ENOMEM;
     }
+
+    ret = i2c_add_driver(&fts_ts_driver);
+    if (ret != 0) {
+        FTS_ERROR("FocalTech touch screen driver init failed with error code: %d", ret);
+    } else {
+        FTS_INFO("FocalTech touch screen driver initialized successfully.");
+    }
+    
     FTS_FUNC_EXIT();
     return ret;
 }

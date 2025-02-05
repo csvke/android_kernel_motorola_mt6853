@@ -1,5 +1,8 @@
 # Makefile for the focaltech touchscreen drivers.
 
+# run this to check if the module has been installed:
+# ls /lib/modules/$(uname -r)/kernel/drivers/input/touchscreen/ -lah
+
 KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 
@@ -26,6 +29,25 @@ all:
 # 	sudo $(MAKE) -C $(KDIR) M=$(PWD) modules_install
 # 	sudo depmod -a
 
+install:
+	find . -name "*.ko" -exec sudo cp {} /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ \;
+	cd /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ && sudo find . -name "*.ko" -exec xz -f {} \;
+	sudo depmod -a
+
+reinstall:
+# Unload the module if it is currently loaded
+	-sudo modprobe -r focaltech-ft3519
+# Remove the module file from the kernel module folder
+	sudo find /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ -name "focaltech-ft3519.ko.xz" -exec rm -f {} \;
+# Copy the new module file to the kernel module folder
+	find . -name "*.ko" -exec sudo cp {} /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ \;
+# Compress the module file
+	cd /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ && sudo find . -name "*.ko" -exec xz -f {} \;
+# Update module dependencies
+	sudo depmod -a
+# Load the new module
+	sudo modprobe focaltech-ft3519
+
 package:
 	MODULE_DIR="/lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/"
 	TAR_FILE="focaltech-ft3519.tar"
@@ -34,5 +56,5 @@ package:
 
 clean:
 	$(MAKE) -C $(KDIR) M=$(PWD) clean
-	# Ensure these files are not deleted
+# Ensure these files are not deleted
 	touch include/firmware/fw_sample.i include/pramboot/FT5452i_Pramboot_v4.1_20210427.i
