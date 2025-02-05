@@ -192,3 +192,9 @@ struct upgrade_func upgrade_func_ft5452i = {
     .hid_supported = false,
     .upgrade = fts_ft5452i_upgrade,
 };
+EXPORT_SYMBOL(upgrade_func_ft5452i);
+
+MODULE_AUTHOR("FocalTech Driver Team");
+MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
+MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
+MODULE_LICENSE("GPL v2");

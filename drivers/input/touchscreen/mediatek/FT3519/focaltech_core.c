@@ -70,6 +70,7 @@
 * Global variable or extern global variabls/functions
 *****************************************************************************/
 struct fts_ts_data *fts_data;
+EXPORT_SYMBOL(fts_data); // csvke: not sure if this is the correct way to export a global variable for other kernel modules to use
 
 /*****************************************************************************
 * Static function prototypes
@@ -2152,7 +2153,7 @@ static const struct i2c_device_id fts_ts_id[] = {
     {},
 };
 static const struct of_device_id fts_dt_match[] = {
-    {.compatible = "focaltech,fts", },
+    {.compatible = "focaltech,ft3519", },
     {},
 };
 MODULE_DEVICE_TABLE(of, fts_dt_match);

@@ -617,6 +617,7 @@ int fts_fwupg_reset_in_boot(void)
     msleep(FTS_DELAY_UPGRADE_RESET);
     return 0;
 }
+EXPORT_SYMBOL(fts_fwupg_reset_in_boot);
 
 /************************************************************************
 * Name: fts_fwupg_enter_into_boot
@@ -676,6 +677,7 @@ int fts_fwupg_enter_into_boot(void)
 
     return 0;
 }
+EXPORT_SYMBOL(fts_fwupg_enter_into_boot);
 
 /************************************************************************
  * Name: fts_fwupg_check_flash_status
@@ -747,6 +749,7 @@ int fts_fwupg_erase(u32 delay)
 
     return 0;
 }
+EXPORT_SYMBOL(fts_fwupg_erase);
 
 /************************************************************************
  * Name: fts_fwupg_ecc_cal
@@ -978,6 +981,7 @@ int fts_flash_write_buf(
 
     return ecc_in_host;
 }
+EXPORT_SYMBOL(fts_flash_write_buf);
 
 /************************************************************************
  * Name: fts_flash_read_buf
