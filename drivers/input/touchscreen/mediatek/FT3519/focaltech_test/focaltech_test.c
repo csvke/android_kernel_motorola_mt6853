@@ -32,6 +32,11 @@
 /*****************************************************************************
 * Included header files
 *****************************************************************************/
+#include <linux/version.h>
+// csvke: Fix for recent kernel versions using kernel_read and kernel_write
+#if LINUX_VERSION_CODE > KERNEL_VERSION(5, 10, 0)
+#include <linux/uaccess.h>
+#endif
 #include "focaltech_test.h"
 
 /*****************************************************************************
@@ -1175,12 +1180,19 @@ void show_data_mc_sc(int *data)
 /* mc_sc end*/
 
 #if CSV_SUPPORT || TXT_SUPPORT
+/*
+csvke:
+The mm_segment_t type and related functions like get_fs() and set_fs() have been deprecated in recent kernel versions. 
+Instead, you should use the kernel_read() and kernel_write() functions for file operations.
+*/
 static int fts_test_save_test_data(char *file_name, char *data_buf, int len)
 {
     struct file *pfile = NULL;
     char filepath[FILE_NAME_LENGTH] = { 0 };
     loff_t pos;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0)
     mm_segment_t old_fs;
+#endif
 
     FTS_TEST_FUNC_ENTER();
     memset(filepath, 0, sizeof(filepath));
@@ -1194,13 +1206,17 @@ static int fts_test_save_test_data(char *file_name, char *data_buf, int len)
         return -EIO;
     }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0)
     old_fs = get_fs();
     set_fs(KERNEL_DS);
     pos = 0;
     vfs_write(pfile, data_buf, len, &pos);
-    filp_close(pfile, NULL);
     set_fs(old_fs);
-
+#else
+    pos = 0;
+    kernel_write(pfile, data_buf, len, &pos);
+#endif
+    filp_close(pfile, NULL);
     FTS_TEST_FUNC_EXIT();
     return 0;
 }
