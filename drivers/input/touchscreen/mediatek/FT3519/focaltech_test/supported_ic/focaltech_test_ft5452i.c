@@ -1488,7 +1488,7 @@ struct test_funcs test_func_ft5452i = {
 };
 EXPORT_SYMBOL(test_func_ft5452i);
 
-MODULE_AUTHOR("FocalTech Driver Team");
-MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
-MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
-MODULE_LICENSE("GPL v2");
+// MODULE_AUTHOR("FocalTech Driver Team");
+// MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
+// MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
+// MODULE_LICENSE("GPL v2");

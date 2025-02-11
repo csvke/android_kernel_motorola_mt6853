@@ -198,7 +198,7 @@ int fts_bus_exit(struct fts_ts_data *ts_data)
 }
 EXPORT_SYMBOL(fts_bus_exit);
 
-MODULE_AUTHOR("FocalTech Driver Team");
-MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
-MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
-MODULE_LICENSE("GPL v2");
+// MODULE_AUTHOR("FocalTech Driver Team");
+// MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
+// MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
+// MODULE_LICENSE("GPL v2");

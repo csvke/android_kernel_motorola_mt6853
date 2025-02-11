@@ -69,8 +69,8 @@
 /*****************************************************************************
 * Global variable or extern global variabls/functions
 *****************************************************************************/
-struct fts_ts_data *fts_data;
-EXPORT_SYMBOL(fts_data); // csvke: not sure if this is the correct way to export a global variable for other kernel modules to use
+struct fts_ts_data *fts_data = NULL;
+// EXPORT_SYMBOL(fts_data); // csvke: not sure if this is the correct way to export a global variable for other kernel modules to use
 
 /*****************************************************************************
 * Static function prototypes
@@ -2092,6 +2092,7 @@ static const struct dev_pm_ops fts_dev_pm_ops = {
 /*****************************************************************************
 * TP Driver
 *****************************************************************************/
+// struct fts_ts_data *ts_data = NULL; // someone redefined
 
 // csvke: add ifdef for different kernel versions as i2c_device_id has been removed in newer kernel versions and probe function has changed
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
@@ -2100,10 +2101,11 @@ static int fts_ts_probe(struct i2c_client *client)
 static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *id)
 #endif
 {
-    int ret = 0;
-    struct fts_ts_data *ts_data = NULL;
+    int ret = 0; // csvke: or int ret; ?
+    struct fts_ts_data *ts_data;
 
-    FTS_INFO("Touch Screen(I2C BUS) driver probe...");
+    printk(KERN_INFO "Touch Screen(I2C BUS) driver probe...\n");
+    // FTS_INFO("Touch Screen(I2C BUS) driver probe...");
 
     if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
         FTS_ERROR("I2C not supported");
@@ -2161,13 +2163,13 @@ MODULE_DEVICE_TABLE(of, fts_dt_match);
 
 // csvke: add ifdef for different kernel versions as i2c_driver has changed in newer kernel versions
 static struct i2c_driver fts_ts_driver = {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
+// #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0))
     .probe = fts_ts_probe,
     .remove = fts_ts_remove,
-#else
-    .probe = fts_ts_probe,
-    .remove = fts_ts_remove,
-#endif
+// #else
+//     .probe = fts_ts_probe,
+//     .remove = fts_ts_remove,
+// #endif
     .driver = {
         .name = FTS_DRIVER_NAME,
         .owner = THIS_MODULE,
@@ -2181,32 +2183,70 @@ static struct i2c_driver fts_ts_driver = {
 
 static int __init fts_ts_init(void)
 {
-    int ret;
-    struct fts_ts_data *ts_data;
+    int ret = 0;
 
-    FTS_FUNC_ENTER();
-    FTS_INFO("Initializing FocalTech touch screen driver...");
+    printk(KERN_INFO "[FTS_TS] %s: Enter\n", __func__);
+    printk(KERN_INFO "[FTS_TS] Initializing FocalTech touch screen driver...\n");
 
-    ts_data = kzalloc(sizeof(*ts_data), GFP_KERNEL);
-    if (!ts_data) {
-        FTS_ERROR("Failed to allocate memory for ts_data");
-        return -ENOMEM;
+    // Verify pointers
+    if (!fts_ts_driver.probe) {
+        printk(KERN_ERR "[FTS_TS] fts_ts_driver.probe is NULL\n");
+        return -EINVAL;
+    }
+    if (!fts_ts_driver.remove) {
+        printk(KERN_ERR "[FTS_TS] fts_ts_driver.remove is NULL\n");
+        return -EINVAL;
+    }
+    if (!fts_ts_driver.driver.of_match_table) {
+        printk(KERN_ERR "[FTS_TS] fts_ts_driver.driver.of_match_table is NULL\n");
+        return -EINVAL;
+    }
+    if (!fts_ts_driver.id_table) {
+        printk(KERN_ERR "[FTS_TS] fts_ts_driver.id_table is NULL\n");
+        return -EINVAL;
     }
 
-    ret = i2c_add_driver(&fts_ts_driver);
+    printk(KERN_INFO "[FTS_TS] Before i2c_add_driver\n");
+    // ret = i2c_add_driver(&fts_ts_driver);
+    printk(KERN_INFO "[FTS_TS] After i2c_add_driver\n");
+
     if (ret != 0) {
-        FTS_ERROR("FocalTech touch screen driver init failed with error code: %d", ret);
+        printk(KERN_ERR "[FTS_TS] FocalTech touch screen driver init failed with error code: %d\n", ret);
     } else {
-        FTS_INFO("FocalTech touch screen driver initialized successfully.");
+        printk(KERN_INFO "[FTS_TS] FocalTech touch screen driver initialized successfully.\n");
     }
-    
-    FTS_FUNC_EXIT();
+
+    printk(KERN_INFO "[FTS_TS] %s: Exit(%d)\n", __func__, __LINE__);
     return ret;
 }
 
+// csvke: WIP: debugging if it's the FTS_ macros that are causing the issue
+// static int __init fts_ts_init(void)
+// {
+//     int ret = 0;
+
+//     // csvke: for debugging
+//     printk(KERN_INFO "Focaltech core test module init\n");
+
+//     FTS_FUNC_ENTER();
+//     FTS_INFO("Initializing FocalTech touch screen driver...");
+
+//     ret = i2c_add_driver(&fts_ts_driver);
+//     if (ret != 0) {
+//         FTS_ERROR("FocalTech touch screen driver init failed with error code: %d", ret);
+//     } else {
+//         FTS_INFO("FocalTech touch screen driver initialized successfully.");
+//     }
+
+//     FTS_FUNC_EXIT();
+//     return ret;
+// }
+
 static void __exit fts_ts_exit(void)
 {
+    printk(KERN_INFO "[FTS_TS] %s: Enter\n", __func__);
     i2c_del_driver(&fts_ts_driver);
+    printk(KERN_INFO "[FTS_TS] %s: Exit(%d)\n", __func__, __LINE__);
 }
 module_init(fts_ts_init);
 module_exit(fts_ts_exit);

@@ -1260,7 +1260,7 @@ int fts_remove_sysfs(struct fts_ts_data *ts_data)
 }
 EXPORT_SYMBOL(fts_remove_sysfs);
 
-MODULE_AUTHOR("FocalTech Driver Team");
-MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
-MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
-MODULE_LICENSE("GPL v2");
+// MODULE_AUTHOR("FocalTech Driver Team");
+// MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
+// MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
+// MODULE_LICENSE("GPL v2");

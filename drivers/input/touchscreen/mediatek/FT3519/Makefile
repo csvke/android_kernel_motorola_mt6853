@@ -3,11 +3,13 @@
 # run this to check if the module has been installed:
 # ls /lib/modules/$(uname -r)/kernel/drivers/input/touchscreen/ -lah
 
+TARGET_MODULE := focaltech-ft3519
+
 KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 
 # Define the main module and its components
-obj-m += focaltech-ft3519.o
+obj-m := focaltech-ft3519.o
 
 focaltech-ft3519-objs :=	focaltech_core.o \
 							focaltech_ex_fun.o \
@@ -22,9 +24,13 @@ focaltech-ft3519-objs :=	focaltech_core.o \
                          	focaltech_flash/focaltech_upgrade_ft5452i.o \
                          	focaltech_i2c.o
 
+# Add the -g flag to CFLAGS
+ccflags-y := -g
+
 all:
 	$(MAKE) -C $(KDIR) M=$(PWD) modules
 
+# csvke: WIP: cannot figure out why module is being installed in the wrong directory of /lib/modules/$(shell uname -r)/updates
 # install:
 # 	sudo $(MAKE) -C $(KDIR) M=$(PWD) modules_install
 # 	sudo depmod -a
@@ -34,25 +40,25 @@ install:
 	cd /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ && sudo find . -name "*.ko" -exec xz -f {} \;
 	sudo depmod -a
 
-reinstall:
-# Unload the module if it is currently loaded
-	-sudo modprobe -r focaltech-ft3519
-# Remove the module file from the kernel module folder
-	sudo find /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ -name "focaltech-ft3519.ko.xz" -exec rm -f {} \;
-# Copy the new module file to the kernel module folder
-	find . -name "*.ko" -exec sudo cp {} /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ \;
-# Compress the module file
-	cd /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ && sudo find . -name "*.ko" -exec xz -f {} \;
-# Update module dependencies
-	sudo depmod -a
-# Load the new module
-	sudo modprobe focaltech-ft3519
+# reinstall:
+# # Unload the module if it is currently loaded
+# 	-sudo modprobe -r focaltech-ft3519
+# # Remove the module file from the kernel module folder
+# 	sudo find /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ -name "focaltech-ft3519.ko.xz" -exec rm -f {} \;
+# # Copy the new module file to the kernel module folder
+# 	find . -name "*.ko" -exec sudo cp {} /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ \;
+# # Compress the module file
+# 	cd /lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/ && sudo find . -name "*.ko" -exec xz -f {} \;
+# # Update module dependencies
+# 	sudo depmod -a
+# # Load the new module
+# 	sudo modprobe focaltech-ft3519
 
-package:
-	MODULE_DIR="/lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/"
-	TAR_FILE="focaltech-ft3519.tar"
-	tar -cvf $(TAR_FILE) -C $(MODULE_DIR) .
-	xz -z $(TAR_FILE)
+# package:
+# 	MODULE_DIR="/lib/modules/$(shell uname -r)/kernel/drivers/input/touchscreen/"
+# 	TAR_FILE="focaltech-ft3519.tar"
+# 	tar -cvf $(TAR_FILE) -C $(MODULE_DIR) .
+# 	xz -z $(TAR_FILE)
 
 clean:
 	$(MAKE) -C $(KDIR) M=$(PWD) clean

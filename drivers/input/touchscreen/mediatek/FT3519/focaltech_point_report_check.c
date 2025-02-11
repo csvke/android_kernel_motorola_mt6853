@@ -127,7 +127,7 @@ int fts_point_report_check_exit(struct fts_ts_data *ts_data)
 }
 #endif /* FTS_POINT_REPORT_CHECK_EN */
 
-MODULE_AUTHOR("FocalTech Driver Team");
-MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
-MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
-MODULE_LICENSE("GPL v2");
+// MODULE_AUTHOR("FocalTech Driver Team");
+// MODULE_AUTHOR("Frankie Yuen csvke <frankie.yuen@me.com>");
+// MODULE_DESCRIPTION("FocalTech Touchscreen Driver");
+// MODULE_LICENSE("GPL v2");

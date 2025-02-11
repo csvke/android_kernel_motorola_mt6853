@@ -237,6 +237,7 @@ enum _FTS_BUS_TYPE {
 * Global variable or extern global variabls/functions
 *****************************************************************************/
 extern struct fts_ts_data *fts_data;
+EXPORT_SYMBOL(fts_data);
 
 /* communication interface */
 extern int fts_read(u8 *cmd, u32 cmdlen, u8 *data, u32 datalen);

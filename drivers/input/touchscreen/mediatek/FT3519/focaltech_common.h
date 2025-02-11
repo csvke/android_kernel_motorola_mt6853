@@ -58,7 +58,8 @@
 
 #define FTS_CHIP_TYPE_MAPPING {{0x89, 0x54, 0x52, 0x54, 0x52, 0x54, 0x5B, 0x54, 0x5E}}
 
-
+// csvke: enable debug
+#define FTS_DEBUG_EN 1
 
 #define FILE_NAME_LENGTH                    128
 #define ENABLE                              1
